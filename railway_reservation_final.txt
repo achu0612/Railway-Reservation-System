@@ -1,0 +1,608 @@
+
+/*************************OCS752 MINI PROJECT - BATCH 5***********************/
+
+/***************************RAILWAY RESERVATION SYSTEM************************/
+
+
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<windows.h>
+
+
+/*************************All Functions***********************/
+
+void startMenu(); //done
+void newUser(); //done
+void login(); //done
+void selMenu(int); //done
+void reserve(int); //done
+float calcAmount(int,int); //done
+void dispBill(char *,int,int,float); //done
+void selTrain(int); //done
+void viewTrains(); //done
+void viewBooking(int); //done
+void cancel(int); //done
+void loading(); //done
+
+
+
+/*************************Ticket details**********************/
+typedef struct 
+{
+	char name[100];
+	int tno[5];
+	int seats[5];
+	int book[5];
+	int bno;
+	int totBook;
+	
+}details[100];
+details dt;
+
+char passwords[100][10];
+
+
+
+/*************************Global variables**********************/
+
+int count=0;
+int i=0;
+float amount[100][5];
+
+
+
+
+/**************************Train Details***********************/
+
+char tnames[][16]={"Rajdhani Express","Chennai Express","Hazrat Express","Dhauli Express","Shatabdi Express","Duronto Express","Jhelum Express"};
+int costs[7]={2000,1000,1500,1000,2000,1700,3500};
+int avail[7]={25,11,20,54,3,33,17};
+
+
+
+
+/************************MAIN FUNCTION**************************/
+
+int main()
+{
+	
+	/******Initialize booked array to zero in structure******/
+	int i=0,j=0;
+	for(i=0;i<100;i++)
+	{
+		for(j=0;j<5;j++)
+		{
+			dt[i].book[j]=0;
+		}
+		/*Intialize total bookings of user to zero*/
+		dt[i].totBook=0;
+	}
+	
+	
+	char ch;
+	start:
+	system("cls");
+	system("color 0F");
+	startMenu();
+	printf("\n\t\t\t\tPress any key to continue");
+	getch();
+	goto start;
+
+	return 0;
+}
+
+
+
+/*********************Main Display*********************/
+
+void startMenu()
+{
+	int sel;
+	start:
+	system("cls");
+	printf("\n");
+	printf("\t\t\t\t\t=================================================\n");
+	printf("\t\t\t\t\t|        -----------------------------          |\n");
+	printf("\t\t\t\t\t|         INDIAN RAILWAYS WELCOMES YOU          |\n");
+	printf("\t\t\t\t\t|        -----------------------------          |\n");
+	printf("\t\t\t\t\t=================================================\n\n");
+	printf("\t\t\t\t\t1. Create Account\n\t\t\t\t\t2. Login\n\t\t\t\t\t3. Exit\n\n");
+	printf("\t\t\t\t\tEnter option: ");
+	scanf(" %d",&sel);
+	
+	switch(sel)
+	{
+		case 1:
+			newUser();
+			goto start;
+			break;
+		case 2:
+			login();
+			break;
+		case 3:
+			exit(0);
+
+		default:
+			system("color 04");
+			printf("\t\t\t\t\t\n\nEnter valid option");
+			sleep(2);
+			goto start;
+	}
+}
+
+/***********************New User***********************/
+void newUser()
+{
+	system("cls");
+	printf("\t\t\t\tEnter your name: ");
+	fflush(stdin);
+	gets(dt[count].name);
+	printf("\n\t\t\t\tCreate password: ");
+	fflush(stdin);
+	gets(passwords[count]);
+	system("color 0A");
+	printf("\n\t\t\t\tAccount Created Successfully. \n\n\t\t\t\tPress any key");
+	getch();
+	system("cls");
+	system("color 0E");
+	printf("\n\n\t\t\t\tYOUR ACCOUNT ID IS: %d ",count+100);
+	count++;
+	printf("\n\n\t\t\t\tPress any key to go to main menu.");
+	getch();
+	system("color 0F");
+}
+
+
+
+/************************Login**************************/
+
+void login()
+{
+	int id;
+	char pw[10];
+	st1:
+	system("cls");
+	printf("\t\t\t\tEnter Account ID: ");
+	scanf("%d",&id);
+	printf("\n\t\t\t\tEnter password: ");
+	fflush(stdin);
+	gets(pw);
+	id=id-100;
+	fflush(stdin);
+	
+	if(strcmp(passwords[id],pw)==0)
+	{
+		system("cls");
+		system("color 0A");
+		printf("\n\t\t\t\tWELCOME %s !\n\n",strupr(dt[id].name));
+		fflush(stdout);
+		sleep(2);
+		selMenu(id);
+	}
+	else
+	{
+		system("color 04");
+		printf("\n\n\t\t\t\tINVALID CREDENTIALS\n");
+		fflush(stdout);
+	}
+}
+
+
+
+/*********************Selection Menu********************/
+
+void selMenu(int id)
+{
+	int sel;
+	start:
+	system("cls");
+	system("color 0E");
+	printf("\n\t\t\t\tWELCOME %s !\n\n",dt[id].name);
+	printf("\n\t\t\t\t=================================");
+	printf("\n\n\t\t\t\t1>> Reserve Ticket");
+	printf("\n\t\t\t\t------------------------");
+	printf("\n\t\t\t\t2>> View Available Trains");
+	printf("\n\t\t\t\t------------------------");
+	printf("\n\t\t\t\t3>> View Your Booking");
+	printf("\n\t\t\t\t------------------------");
+	printf("\n\t\t\t\t4>> Cancel Reservation");
+	printf("\n\t\t\t\t------------------------");
+	printf("\n\t\t\t\t5>> Logout");
+	printf("\n\n\t\t\t\t=================================\n");
+	printf("\n\t\t\t\tSELECT OPTION: ");
+	scanf("%d",&sel);
+	
+	switch(sel)
+	{
+		case 1:
+			reserve(id);
+			goto start;
+			break;
+		case 2:
+			viewTrains();
+			system("color 0B");
+			printf("\n\n\t\t\t\tPress any key to continue");
+			getch();
+			goto start;
+			break;
+		case 3:
+			viewBooking(id);
+			system("color 0B");
+			printf("\n\n\t\t\t\tPress any key to continue");
+			getch();
+			goto start;
+			break;
+		case 4:
+			if(dt[id].totBook>0)
+			{
+				cancel(id);
+				system("color 09");
+				printf("\n\n\t\t\t\t\t\tPress any key to continue");
+				getch();
+				goto start;
+			}
+			else
+			{
+				system("cls");
+				printf("\n\n\n\t\t\t\tYOU HAVE NO BOOKINGS\n");
+				goto start;
+			}
+			break;
+		case 5:
+			system("color 0F");
+			startMenu();
+			break;
+		default:
+			system("color 04");
+			printf("\n\n\t\t\t\tEnter valid option");
+			sleep(1);
+			goto start;
+	}
+}
+
+
+
+/************************Reservation**************************/
+
+void reserve(int id)
+{
+	// Maximum booking limit per person --> 5 //
+	if(dt[id].totBook>4)
+	{
+		system("cls");
+		system("color 04");
+		printf("\n\n\t\t\t\t\tMAXIMUM BOOKING LIMIT REACHED");
+		printf("\n\n\t\t\t\t\tPlease try again tomorrow.\n");
+		printf("\n\n\t\t\t\t\tPress any key to go back.");
+		getch();
+	}
+	else
+	{
+		char ch;
+		system("cls");
+		printf("\n\n\t\t\t\tPress Enter To View Available Trains ");
+		getch();
+		system("cls");
+		st2:
+		viewTrains();
+		
+		/***Find empty booking slot***/
+		
+		dt[id].bno=0;
+		while(dt[id].book[dt[id].bno]!=0)
+		{
+			dt[id].bno++;
+		}
+		
+		/***Fill the empty slot***/
+		
+		printf("\n\n\tEnter train number: ");	
+		scanf("%d",&dt[id].tno[dt[id].bno]);
+		int currtrain=(dt[id].tno[dt[id].bno])-1001;
+		if(dt[id].tno[dt[id].bno]>=1001 && dt[id].tno[dt[id].bno]<=1007)
+		{
+			st1:
+			system("color 0E");
+			printf("\n\tEnter Number of seats: ");
+			scanf("%d",&dt[id].seats[dt[id].bno]);
+			
+			
+				
+			if(dt[id].seats[dt[id].bno] <=0 ) 
+			{
+				system("color 04");
+				printf("\n\n\tNumber of seats invalid");
+				sleep(2);
+				goto st1;
+			}
+			else if((avail[currtrain]-dt[id].seats[dt[id].bno])<0) 
+			{
+				system("color 04");
+				printf("\n\n\tSORRY THERE ARE ONLY %d SEATS AVAILABLE.",avail[currtrain]);
+				if(avail[currtrain==0]) 
+				{
+					sleep(2);
+					goto st2;
+				}
+				sleep(2);
+				goto st1;
+			}
+			else
+			{
+				amount[id][dt[id].bno]=calcAmount(dt[id].tno[dt[id].bno],dt[id].seats[dt[id].bno]);
+				dispBill(dt[id].name,dt[id].seats[dt[id].bno],dt[id].tno[dt[id].bno],amount[id][dt[id].bno]);
+			}
+		}
+		else
+		{
+			system("color 04");
+			printf("\n\tInvalid train Number! Enter again: ");
+			goto st2;
+		}
+		
+		
+		printf("\n\n\t\t\t\tConfirm Ticket (y/n):>> ");
+		
+		start:
+		system("color 0E");
+		scanf(" %c",&ch);
+		if(ch=='y')
+		{
+			loading();
+			system("cls");
+			system("color 0A");
+			printf("\n\n\n\n\n\t\t\t\t\t\t=======================");
+			printf("\n\t\t\t\t\t\t Reservation Confirmed\n");
+			printf("\t\t\t\t\t\t=======================");
+			avail[currtrain]-=dt[id].seats[dt[id].bno];
+			dt[id].book[dt[id].bno]=1;
+			dt[id].totBook++;
+			sleep(2);
+		}
+		else
+		{
+			if(ch=='n')
+			{
+				printf("\n\t\t\t\tReservation Not Done!\n\tPress any key to go back to Main menu!");
+			}
+			else
+			{
+				system("color 04");
+				printf("\n\t\t\t\tInvalid choice! Enter again: ");
+				sleep(2);
+				goto start;
+			}
+		}
+	}
+	
+}
+
+
+/************************Calculate Cost**************************/
+
+float calcAmount(int tno, int seats)
+{
+	tno=tno-1001;
+	float amt=costs[tno]*seats;
+	return amt;
+}
+
+
+/************************Display Bill**************************/
+
+void dispBill(char name[],int seats,int tno,float amt)
+{
+	system("cls");
+	system("color 0F");
+	//loading();
+	printf("\n\t\t\t\t---------------------\n");
+	printf("\t\t\t\t\tTICKET\n");
+	printf("\t\t\t\t---------------------\n\n");
+	printf("\t\t\t\tName:\t\t\t%s",name);
+	printf("\n\t\t\t\tNumber Of Seats:\t%d",seats);
+	printf("\n\t\t\t\tTrain Number:\t\t%d",tno);
+	selTrain(tno);
+	printf("\n\t\t\t\tTotal Amount:\t\t%.2f",amt);
+	
+}
+
+
+/************************Selected Train**************************/
+
+void selTrain(int tno)
+{
+	if(tno==1001)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tRajdhani Express");
+		printf("\n\t\t\t\tDestination:\t\tDelhi to Trivandrum");
+		printf("\n\t\t\t\tDeparture:\t\t9am ");
+	}
+	if(tno==1002)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tChennai Express");
+		printf("\n\t\t\t\tDestination:\t\tMumbai to Chennai");
+		printf("\n\t\t\t\tDeparture:\t\t12pm ");
+	}
+	if(tno==1003)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tHazrat Express");
+		printf("\n\t\t\t\tDestination:\t\tDelhi to Mumbai");
+		printf("\n\t\t\t\tDeparture:\t\t8am ");
+	}
+	if(tno==1004)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tDhauli Express");
+		printf("\n\t\t\t\tDestination:\t\tHowrah to Puri");
+		printf("\n\t\t\t\tDeparture:\t\t11am ");
+	}
+	if(tno==1005)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tShatabdi Express");
+		printf("\n\t\t\t\tDestination:\t\tAgra to Jaipur");
+		printf("\n\t\t\t\tDeparture:\t\t7am ");
+	}
+	if(tno==1006)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tDuronto Express");
+		printf("\n\t\t\t\tDestination:\t\tHyderabad to Patna");
+		printf("\n\t\t\t\tDeparture:\t\t9.30am ");
+	}
+	if(tno==1007)
+	{
+		printf("\n\t\t\t\tTrain:\t\t\tJhelum Express");
+		printf("\n\t\t\t\tDestination:\t\tPune to Jammu");
+		printf("\n\t\t\t\tDeparture:\t\t1pm ");
+	}
+	
+}
+
+
+/************************List of Trains**************************/
+
+void viewTrains()
+{
+	int i=0;
+	system("cls");
+	printf("\n\t--------------------------------------------------------------------------------------------------------");	
+	printf("\n\tTr.No\tName\t\t\tDestinations\t\tCharges\t\tTime\t\tSeats Available\n");
+	printf("\t--------------------------------------------------------------------------------------------------------");
+	printf("\n\t1001\tRajdhani Express\tDelhi to Trivandrum\tRs.2000\t\t9am\t\t%d",avail[i++]);
+	printf("\n\t1002\tChennai Express\t\tMumbai To Chennai\tRs.1000\t\t12pm\t\t%d",avail[i++]);
+	printf("\n\t1003\tHazrat Express\t\tDelhi To Mumbai\t\tRs.1500\t\t8am\t\t%d",avail[i++]);
+	printf("\n\t1004\tDhauli Express\t\tHowrah To Puri\t\tRs.1000\t\t11am\t\t%d",avail[i++]);
+	printf("\n\t1005\tShatabdi Express\tAgra To Jaipur\t\tRs.2000\t\t7am\t\t%d",avail[i++]);
+	printf("\n\t1006\tDuronto Express\t\tHyderabad To Patna\tRs.1700\t\t9.30am\t\t%d",avail[i++]);
+    printf("\n\t1007\tJhelum Express\t\tPune To Jammu\t\tRs.3500\t\t1pm\t\t%d",avail[i]);	
+    
+}
+
+
+/************************Previous bookings**************************/
+
+void viewBooking(int id)
+{
+	system("color 0B");
+	printf("Works");
+	system("cls");
+	printf("\t\t\t\t===========================");
+	printf("\n\t\t\t\t   YOUR CURRENT BOOKINGS\n");
+	printf("\t\t\t\t===========================\n\n");
+	
+	int i=0,count=0;
+	for(i=0;i<5;i++)
+	{
+		if(dt[id].book[i]==1)
+		{
+	 		printf("\t\t\t\tBooking number %d\n",++count);
+			printf("\t\t\t\t------------------------\n\n");
+			printf("\t\t\t\tBOOKING ID: \t\t%d\n",i+100);
+			printf("\t\t\t\tTrain Number:\t\t%d",dt[id].tno[i]);
+			selTrain(dt[id].tno[i]);
+			printf("\n\t\t\t\tNumber Of Seats:\t%d",dt[id].seats[i]);
+			printf("\n\t\t\t\tTotal Amount:\t\t%.2f\n\n",amount[id][i]);
+		}
+	}
+	
+}
+
+
+/************************Cancel Ticket**************************/
+
+void cancel(int id)
+{
+	
+	int cancelno;
+	viewBooking(id);
+	
+	start1:
+	printf("\n\n\t\t\t\tEnter BOOKING ID to be cancelled: ");
+	scanf("%d",&cancelno);
+	
+	if(cancelno>=100 && cancelno<105)
+	{
+		system("cls");
+		system("color 0E");
+		printf("\n\t\t\t\tBOOKING ID: \t\t%d\n",cancelno);
+		printf("\t\t\t\t----------------------------\n\n");
+		printf("\t\t\t\tTrain Number:\t\t%d",dt[id].tno[cancelno-100]);
+		selTrain(dt[id].tno[cancelno-100]);
+		printf("\n\t\t\t\tNumber Of Seats:\t%d",dt[id].seats[cancelno-100]);
+		printf("\n\t\t\t\tTotal Amount:\t\t%.2f\n\n",amount[id][cancelno-100]);
+		
+		printf("\n\n\t\t\t\tConfirm Cancellation (y/n):>> ");
+		
+		char ch;
+		start:
+		scanf(" %c",&ch);
+		if(ch=='y')
+		{
+			loading();
+			system("cls");
+			system("color 0A");
+			printf("\n\n\n\n\n\t\t\t\t\t\t==================");
+			printf("\n\t\t\t\t\t\t Booking Cancelled\n");
+			printf("\t\t\t\t\t\t==================");
+			dt[id].book[cancelno-100]=0;
+			dt[id].totBook--;
+			sleep(2);
+		}
+		else
+		{
+			if(ch=='n')
+			{
+				printf("\n\t\t\t\tCancellation Not Done!\n\tPress any key to go back to Main menu!");
+			}
+			else
+			{
+				system("color 04");
+				printf("\n\t\t\t\tInvalid choice! Enter again: ");
+				sleep(2);
+				goto start;
+			}
+		}
+	}
+	else
+	{
+		system("color 04");
+		printf("\n\t\t\t\tInvalid Booking ID!\n\n");
+		goto start1;
+	}
+	
+	
+}
+
+
+
+/************************Loading Bar Animation**************************/
+
+void loading()
+{
+	system("cls");
+    system("color 0A"); //green
+    char a=177, b=219;
+    printf("\n\n\n\n");
+    printf("\n\n\n\n\t\t\t\t\t\t\tLoading...\n\n");
+    printf("\t\t\t\t\t\t\t");
+    int i;
+    
+    /*Initial loading bar*/
+    
+    for (i=0;i<26;i++)
+        printf("%c", a);
+  
+    /*Set the cursor again at starting point of loading bar*/
+    
+    printf("\r");
+    printf("\t\t\t\t\t\t\t");
+  
+    /*Print loading bar progress*/
+    for(i=0;i<26;i++) 
+	{
+        printf("%c", b);
+        Sleep(25);
+    }
+}
+
+
