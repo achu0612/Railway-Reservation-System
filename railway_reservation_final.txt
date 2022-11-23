@@ -9,6 +9,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<windows.h>
+#include <unistd.h>
 
 
 /*************************All Functions***********************/
@@ -56,10 +57,9 @@ float amount[100][5];
 
 /**************************Train Details***********************/
 
-char tnames[][16]={"Rajdhani Express","Chennai Express","Hazrat Express","Dhauli Express","Shatabdi Express","Duronto Express","Jhelum Express"};
+char tnames[7][16]={"Rajdhani Express","Chennai Express","Hazrat Express","Dhauli Express","Shatabdi Express","Duronto Express","Jhelum Express"};
 int costs[7]={2000,1000,1500,1000,2000,1700,3500};
 int avail[7]={25,11,20,54,3,33,17};
-
 
 
 
@@ -220,6 +220,7 @@ void selMenu(int id)
 			reserve(id);
 			goto start;
 			break;
+			
 		case 2:
 			viewTrains();
 			system("color 0B");
@@ -227,13 +228,26 @@ void selMenu(int id)
 			getch();
 			goto start;
 			break;
+		
 		case 3:
-			viewBooking(id);
-			system("color 0B");
-			printf("\n\n\t\t\t\tPress any key to continue");
-			getch();
-			goto start;
+			if(dt[id].totBook==0)
+			{
+				system("cls");
+				printf("\n\t\t\t\tThere are no current bookings\n");
+				printf("\n\n\t\t\t\tPress any key to continue");
+				getch();
+				goto start;
+			}
+			else
+			{
+				viewBooking(id);
+				system("color 0B");
+				printf("\n\n\t\t\t\tPress any key to continue");
+				getch();
+				goto start;
+			}
 			break;
+			
 		case 4:
 			if(dt[id].totBook>0)
 			{
@@ -247,13 +261,17 @@ void selMenu(int id)
 			{
 				system("cls");
 				printf("\n\n\n\t\t\t\tYOU HAVE NO BOOKINGS\n");
+				printf("\n\n\t\t\t\t\t\tPress any key to continue");
+				getch();
 				goto start;
 			}
 			break;
+			
 		case 5:
 			system("color 0F");
 			startMenu();
 			break;
+			
 		default:
 			system("color 04");
 			printf("\n\n\t\t\t\tEnter valid option");
@@ -484,7 +502,6 @@ void viewTrains()
 void viewBooking(int id)
 {
 	system("color 0B");
-	printf("Works");
 	system("cls");
 	printf("\t\t\t\t===========================");
 	printf("\n\t\t\t\t   YOUR CURRENT BOOKINGS\n");
@@ -503,6 +520,7 @@ void viewBooking(int id)
 			printf("\n\t\t\t\tNumber Of Seats:\t%d",dt[id].seats[i]);
 			printf("\n\t\t\t\tTotal Amount:\t\t%.2f\n\n",amount[id][i]);
 		}
+		
 	}
 	
 }
@@ -520,6 +538,7 @@ void cancel(int id)
 	printf("\n\n\t\t\t\tEnter BOOKING ID to be cancelled: ");
 	scanf("%d",&cancelno);
 	
+	int currtrain=(dt[id].tno[cancelno-100])-1001;
 	if(cancelno>=100 && cancelno<105)
 	{
 		system("cls");
@@ -544,6 +563,7 @@ void cancel(int id)
 			printf("\n\n\n\n\n\t\t\t\t\t\t==================");
 			printf("\n\t\t\t\t\t\t Booking Cancelled\n");
 			printf("\t\t\t\t\t\t==================");
+			avail[currtrain]+=dt[id].seats[cancelno-100];
 			dt[id].book[cancelno-100]=0;
 			dt[id].totBook--;
 			sleep(2);
@@ -604,5 +624,7 @@ void loading()
         Sleep(25);
     }
 }
+
+
 
 
